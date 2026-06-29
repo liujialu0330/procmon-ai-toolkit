@@ -227,120 +227,40 @@ export_query_results(format="csv", output_path=...)  → export for further anal
 
 ## AI Agent Auto-Discovery
 
-To let AI agents **automatically discover and use** this toolkit, add the following to your project's instruction files.
+Add a short pointer to your project's `CLAUDE.md` or `AGENTS.md` so AI agents automatically discover this toolkit. Keep it minimal — the agent can read this README for details.
 
 <details>
-<summary><b>CLAUDE.md</b> (for Claude Code)</summary>
+<summary><b>CLAUDE.md</b> example</summary>
 
 ```markdown
 ## ProcMon Automated Capture & Analysis
 
-This project includes a ProcMon automation toolkit (`04_tools/procmon-mcp`). AI can autonomously
-complete the full "capture → export → analyze" pipeline without human intervention.
+ProcMon automation toolkit at `04_tools/procmon-mcp`. AI can autonomously capture and analyze.
 
-Use cases: SDK Init file access analysis, DLL load chain verification, runtime directory dependency analysis, etc.
+- Capture: `& "path/to/capture.ps1" -TargetCommand "<command>"` (auto-filters by process name)
+- Custom filter: `& $py gen-filter.py -o filter.pmc --process X.exe [--path-contains Y] [--operation Z]`
+- Analysis: MCP tools — `load_file` → `query_events` / `find_file_access` / `count_events_by_process`
+- Details: see `04_tools/procmon-mcp/README.md`
 
-### Capture (PowerShell)
-
-\`\`\`powershell
-# Basic usage (auto-filters by target process name)
-& "path/to/capture.ps1" -TargetCommand "<target command>"
-
-# Specify process name / custom PMC / timeout
-& "path/to/capture.ps1" -TargetCommand "..." -ProcessName "MyApp.exe"
-& "path/to/capture.ps1" -TargetCommand "..." -FilterConfig "<PMC path>"
-& "path/to/capture.ps1" -TargetCommand "..." -TimeoutSeconds 60
-\`\`\`
-
-The script auto-generates a filter → starts ProcMon → runs target → stops ProcMon → exports XML.
-For more granular filtering, use `gen-filter.py` first, then pass to `capture.ps1 -FilterConfig`.
-
-### Analysis (MCP tools, configured in .mcp.json)
-
-1. `load_file` — Load the captured XML
-2. `query_events` — Filter by process/operation/path/result
-3. `find_file_access` — Search file access by path substring
-4. `list_processes` / `get_process_details` — Process info
-5. `count_events_by_process` / `summarize_operations_by_process` — Statistics
-6. `export_query_results` — Export as CSV/JSON
-
-### Constraints
-
-- Capture outputs are not committed to Git (.gitignore excludes `captures/`).
-- MCP analysis is read-only and does not modify any files.
+Captures not committed to Git. MCP analysis is read-only.
 ```
 
 </details>
 
 <details>
-<summary><b>AGENTS.md</b> (for Codex / multi-agent)</summary>
+<summary><b>AGENTS.md</b> example</summary>
 
 ```markdown
 ## ProcMon Automated Capture & Analysis
 
-This project includes a ProcMon automation toolkit. AI can autonomously complete capture and analysis.
+ProcMon automation toolkit at `04_tools/procmon-mcp`, MCP config in `.mcp.json`.
 
-- Tool directory: `04_tools/procmon-mcp` (isolated Python venv + capture script)
-- MCP config: `.mcp.json` in project root (`procmon` server)
+- Capture: `& "path/to/capture.ps1" -TargetCommand "<command>"` (auto-filters by process name)
+- Custom filter: `& $py gen-filter.py -o filter.pmc --process X.exe [--path-contains Y] [--operation Z]`
+- Analysis: MCP tools — `load_file` → `query_events` / `find_file_access` / `count_events_by_process`
+- Details: see `04_tools/procmon-mcp/README.md`
 
-### Step 1: Capture
-
-Call `capture.ps1` to automate ProcMon start, target execution, stop, and XML export.
-The script auto-extracts the target process name as a filter by default.
-
-\`\`\`powershell
-# Basic (auto-filters by target process name)
-& "path/to/capture.ps1" -TargetCommand "<target command>"
-
-# With explicit process name
-& "path/to/capture.ps1" -TargetCommand "<target command>" -ProcessName "MyApp.exe"
-
-# With custom PMC filter (advanced)
-& "path/to/capture.ps1" -TargetCommand "<target command>" -FilterConfig "<PMC path>"
-\`\`\`
-
-Output in `04_tools/procmon-mcp/captures/capture-<timestamp>/`:
-- `capture.xml` — ProcMon events XML (for MCP loading)
-- `manifest.json` — metadata (exit code, stdout/stderr, timing, file sizes)
-
-### Generate Custom Filters (optional)
-
-\`\`\`powershell
-$py = "path/to/.venv/Scripts/python.exe"
-
-# Filter by process
-& $py gen-filter.py -o filter.pmc --process MyApp.exe
-
-# Process + path pattern
-& $py gen-filter.py -o filter.pmc --process MyApp.exe --path-contains "config.ini"
-
-# Process + only DLL loads
-& $py gen-filter.py -o filter.pmc --process MyApp.exe --operation "Load Image"
-
-# Process + exclude noise
-& $py gen-filter.py -o filter.pmc --process MyApp.exe --path-excludes "\Windows\"
-
-# Process + only failures
-& $py gen-filter.py -o filter.pmc --process MyApp.exe --result-excludes SUCCESS
-\`\`\`
-
-### Step 2: MCP Analysis
-
-Query captured results via MCP tools:
-
-1. `load_file` — Load `capture.xml`
-2. `query_events` — Filter events by process, operation, path, result
-3. `find_file_access` — Search file access by path substring
-4. `list_processes` / `get_process_details` — Process info and module list
-5. `count_events_by_process` / `summarize_operations_by_process` — Statistics
-6. `get_timing_statistics` / `get_process_lifetime` — Timing analysis
-7. `export_query_results` — Export results as CSV or JSON
-
-### Constraints
-
-- Capture outputs are not committed to Git.
-- `capture.ps1` only controls ProcMon capture. It does not run arbitrary apps or connect devices.
-- MCP analysis is read-only.
+Captures not committed to Git. MCP analysis is read-only.
 ```
 
 </details>
