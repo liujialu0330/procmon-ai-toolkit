@@ -227,38 +227,21 @@ export_query_results(format="csv", output_path=...)  → export for further anal
 
 ## AI Agent Auto-Discovery
 
-Add a short pointer to your project's `CLAUDE.md` or `AGENTS.md` so AI agents automatically discover this toolkit. Keep it minimal — the agent can read this README for details.
+Add a short pointer to your project's `CLAUDE.md` or `AGENTS.md` so AI agents automatically discover this toolkit. **No hardcoded paths** — the agent searches for `capture.ps1` to locate the toolkit directory.
 
 <details>
-<summary><b>CLAUDE.md</b> example</summary>
+<summary><b>CLAUDE.md / AGENTS.md</b> example</summary>
 
 ```markdown
 ## ProcMon Automated Capture & Analysis
 
-ProcMon automation toolkit at `04_tools/procmon-mcp`. AI can autonomously capture and analyze.
+This project includes ProcMon AI Toolkit. Search for `capture.ps1` to locate the toolkit directory.
+MCP analysis tools are auto-configured in `.mcp.json`.
 
-- Capture: `& "path/to/capture.ps1" -TargetCommand "<command>"` (auto-filters by process name)
-- Custom filter: `& $py gen-filter.py -o filter.pmc --process X.exe [--path-contains Y] [--operation Z]`
+- Capture: `& "<toolkit-dir>/capture.ps1" -TargetCommand "<command>"` (auto-filters by process name)
+- Custom filter: `& $py "<toolkit-dir>/gen-filter.py" -o filter.pmc --process X.exe [--path-contains Y]`
 - Analysis: MCP tools — `load_file` → `query_events` / `find_file_access` / `count_events_by_process`
-- Details: see `04_tools/procmon-mcp/README.md`
-
-Captures not committed to Git. MCP analysis is read-only.
-```
-
-</details>
-
-<details>
-<summary><b>AGENTS.md</b> example</summary>
-
-```markdown
-## ProcMon Automated Capture & Analysis
-
-ProcMon automation toolkit at `04_tools/procmon-mcp`, MCP config in `.mcp.json`.
-
-- Capture: `& "path/to/capture.ps1" -TargetCommand "<command>"` (auto-filters by process name)
-- Custom filter: `& $py gen-filter.py -o filter.pmc --process X.exe [--path-contains Y] [--operation Z]`
-- Analysis: MCP tools — `load_file` → `query_events` / `find_file_access` / `count_events_by_process`
-- Details: see `04_tools/procmon-mcp/README.md`
+- Details: see the toolkit's `README.md`
 
 Captures not committed to Git. MCP analysis is read-only.
 ```
