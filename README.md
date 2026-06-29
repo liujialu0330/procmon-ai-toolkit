@@ -235,8 +235,13 @@ Add a short pointer to your project's `CLAUDE.md` or `AGENTS.md` so AI agents au
 ```markdown
 ## ProcMon Automated Capture & Analysis
 
-This project includes ProcMon AI Toolkit. Search for `capture.ps1` to locate the toolkit directory.
-MCP analysis tools are auto-configured in `.mcp.json`.
+This project includes ProcMon AI Toolkit for monitoring DLL loads, file access, and registry
+operations at runtime. **Only invoke when you need to diagnose runtime behavior** — such as
+debugging Init failures, verifying DLL search paths, or profiling file I/O patterns.
+Do not run ProcMon on every task; it is an on-demand diagnostic tool.
+
+Search for `capture.ps1` to locate the toolkit directory. MCP analysis tools are auto-configured
+in `.mcp.json`.
 
 - Capture: `& "<toolkit-dir>/capture.ps1" -TargetCommand "<command>"` (auto-filters by process name)
 - Custom filter: `& $py "<toolkit-dir>/gen-filter.py" -o filter.pmc --process X.exe [--path-contains Y]`
