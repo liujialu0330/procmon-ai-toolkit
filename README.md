@@ -33,32 +33,41 @@ This toolkit turns ProcMon into an **AI-native tool** by solving three problems:
 
 ## Architecture
 
-```
-┌──────────────────────────────────────────────────────┐
-│                    AI Agent                          │
-│              (Claude Code, etc.)                     │
-└───────┬─────────────────────────────────┬────────────┘
-        │ Step 1: Capture                 │ Step 2: Query
-        ▼                                 ▼
-┌───────────────┐  XML  ┌──────────────────────────────┐
-│  capture.ps1  │──────▶│   ProcmonMCP (MCP Server)    │
-│               │       │                              │
-│ Start ProcMon │       │  load_file    query_events   │
-│ Run Target    │       │  find_file_access             │
-│ Stop ProcMon  │       │  list_processes              │
-│ Export XML    │       │  count_events_by_process     │
-└───────┬───────┘       │  export_query_results  ...   │
-        │               └──────────────────────────────┘
-        │ (optional)
-        ▼
-┌───────────────┐
-│ gen-filter.py │
-│               │
-│ Process name  │
-│ Path pattern  │──▶ .pmc filter file
-│ Operation     │
-│ Result        │
-└───────────────┘
+```mermaid
+graph TD
+    AI["🤖 AI Agent<br/>(Claude Code, Copilot, Cursor, etc.)"]
+
+    AI -->|"Step 1: Capture"| CAPTURE
+    AI -->|"Step 2: Query"| MCP
+
+    subgraph CAPTURE["capture.ps1"]
+        C1["Start ProcMon"]
+        C2["Run Target App"]
+        C3["Stop ProcMon"]
+        C4["Export XML"]
+        C1 --> C2 --> C3 --> C4
+    end
+
+    subgraph MCP["ProcmonMCP — MCP Server"]
+        M1["load_file"]
+        M2["query_events"]
+        M3["find_file_access"]
+        M4["list_processes"]
+        M5["count_events_by_process"]
+        M6["export_query_results"]
+    end
+
+    CAPTURE -->|"capture.xml"| MCP
+
+    FILTER["gen-filter.py<br/><i>Process · Path · Operation · Result</i>"]
+    FILTER -->|".pmc filter"| CAPTURE
+
+    AI -.->|"(optional)"| FILTER
+
+    style AI fill:#4A90D9,color:#fff,stroke:none
+    style MCP fill:#2ECC71,color:#fff,stroke:none
+    style CAPTURE fill:#E67E22,color:#fff,stroke:none
+    style FILTER fill:#9B59B6,color:#fff,stroke:none
 ```
 
 ## Features
